@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express');
 const cors = require('cors');
 
@@ -23,16 +23,36 @@ async function run() {
   try {
     await client.connect();
     const itemCollection = client.db('warehouse').collection('items');
-    const item = { id: '1', name: 'Carolina Herrera' };
-    const result = await itemCollection.insertOne(item);
-    console.log(result);
+
+    //=========
+    //Items API
+    //=========
+
+    app.get('/items', async (req, res) => {
+      const query = {};
+      const cursor = itemCollection.find(query);
+      const items = await cursor.toArray();
+      res.send(items);
+    });
+
+    app.get('/items/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: ObjectId(id) };
+      const items = await itemCollection.findOne(query);
+      res.send(items);
+    });
   } finally {
     //await client.close();
   }
 }
 
-//run().catch(console.dir);
+run().catch(console.dir);
 
 app.get('/', (req, res) => {
-  res.send('Running on port 5000');
+  res.send('Aroma Central Server is Running!');
+});
+
+app.listen(port, () => {
+  console.log('Listening to port', port);
 });
