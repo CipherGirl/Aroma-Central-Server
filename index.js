@@ -63,6 +63,26 @@ async function run() {
       const result = await itemCollection.deleteOne(query);
       res.send(result);
     });
+
+    //====
+    //Put
+    //===
+
+    app.put('/update/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id, req.body);
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+
+      const result = await itemCollection.updateOne(
+        filter,
+        {
+          $set: { quantity: req.body.quantity },
+        },
+        options
+      );
+      res.status(200).send(result);
+    });
   } finally {
     //await client.close();
   }
