@@ -2,6 +2,7 @@ require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 
 const { port, dbUserName, dbUserPassword } = process.env;
 
@@ -24,6 +25,18 @@ async function run() {
     await client.connect();
     const itemCollection = client.db('warehouse').collection('items');
 
+    //==========
+    //JWT Login
+    //==========
+
+    app.post('/login', (req, res) => {
+      const email = req.body;
+
+      const token = jwt.sign(email, process.env.ACCESS_TOKEN_SECRET);
+
+      res.send({ token });
+    });
+
     //=========
     //Items API
     //=========
@@ -41,6 +54,30 @@ async function run() {
       const query = { _id: ObjectId(id) };
       const items = await itemCollection.findOne(query);
       res.send(items);
+    });
+
+    //==========
+    //User Items
+    //===========
+    app.get('/user/items', async (req, res) => {
+      const tokenInfo = req.headers.authorization;
+
+      console.log(tokenInfo);
+
+      const [email, accessToken] = tokenInfo.split(' ');
+      console.log(email, accessToken);
+
+      const decoded = verifyToken(accessToken);
+      console.log(email, decoded.email);
+
+      if (email === decoded.email) {
+        const userItems = await itemCollection
+          .find({ userEmail: email })
+          .toArray();
+        res.status(200).send(userItems);
+      } else {
+        res.status(401).send({ success: 'UnAuthoraized Access' });
+      }
     });
 
     //==========
@@ -97,3 +134,17 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log('Listening to port', port);
 });
+
+function verifyToken(token) {
+  let email;
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
+    if (err) {
+      email = 'Invalid email';
+    }
+    if (decoded) {
+      console.log(decoded);
+      email = decoded;
+    }
+  });
+  return email;
+}
