@@ -4,7 +4,9 @@ const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 
-const { port, dbUserName, dbUserPassword } = process.env;
+const { dbUserName, dbUserPassword } = process.env;
+
+const port = process.env.PORT || '5000';
 
 const app = express();
 
