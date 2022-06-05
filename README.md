@@ -14,7 +14,7 @@ A inventory management system for Perfumes
 
 ### Client Side
 
-- Link: <https://github.com/ProgrammingHeroWC4/warehouse-management-client-side-CipherGirl>
+- Link: <https://github.com/CipherGirl/Aroma-Central-Client>
 - Firebase for React/Web
 - React Routes
 - Mantine
@@ -22,7 +22,7 @@ A inventory management system for Perfumes
 
 ### Server Side
 
-- Link: <https://github.com/ProgrammingHeroWC4/warehouse-management-server-side-CipherGirl>
+- Link: <https://github.com/CipherGirl/Aroma-Central-Server>
 - NodeJs
 - Express
 - JWT
