@@ -24,7 +24,7 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    await client.connect();
+    client.connect();
     const itemCollection = client.db('warehouse').collection('items');
 
     //==========
@@ -52,7 +52,6 @@ async function run() {
 
     app.get('/items/:id', async (req, res) => {
       const id = req.params.id;
-      console.log(id);
       const query = { _id: ObjectId(id) };
       const items = await itemCollection.findOne(query);
       res.send(items);
@@ -64,13 +63,9 @@ async function run() {
     app.get('/user/items', async (req, res) => {
       const tokenInfo = req.headers.authorization;
 
-      console.log(tokenInfo);
-
       const [email, accessToken] = tokenInfo.split(' ');
-      console.log(email, accessToken);
 
       const decoded = verifyToken(accessToken);
-      console.log(email, decoded.email);
 
       if (email === decoded.email) {
         const userItems = await itemCollection
@@ -150,3 +145,5 @@ function verifyToken(token) {
   });
   return email;
 }
+
+module.exports = app;
